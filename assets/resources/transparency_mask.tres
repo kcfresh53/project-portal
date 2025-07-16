@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bt83ceuwscyj"]
+
+[ext_resource type="Shader" uid="uid://jbyg2pemgre1" path="res://scripts/shaders/color_masker.gdshader" id="1_72nq4"]
+
+[resource]
+shader = ExtResource("1_72nq4")
+shader_parameter/tolerance = 0.1
+shader_parameter/prev_color = Color(0, 0, 0, 1)
+shader_parameter/new_color = Color(0, 0, 0, 0)

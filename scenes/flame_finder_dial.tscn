@@ -1,0 +1,192 @@
+[gd_scene load_steps=24 format=3 uid="uid://cq6iomo3m4s2t"]
+
+[ext_resource type="Script" uid="uid://dg2w51640ihor" path="res://scripts/interactive_gui.gd" id="1_arvn2"]
+[ext_resource type="Texture2D" uid="uid://shebt1220e4s" path="res://assets/textures/wheel/flame_finder_logo.png" id="2_5c8d3"]
+[ext_resource type="Texture2D" uid="uid://cko7sljyj27vy" path="res://assets/textures/wheel/Wheel Background.png" id="3_qk5au"]
+[ext_resource type="Texture2D" uid="uid://0fp3at3a68fv" path="res://assets/textures/wheel/All_Slots_Still.png" id="4_jebmd"]
+[ext_resource type="Texture2D" uid="uid://c6t3ebbrn2vil" path="res://assets/textures/wheel/Lights OFF.png" id="5_ca30p"]
+[ext_resource type="Texture2D" uid="uid://cb7wk7l1lyllj" path="res://assets/textures/wheel/Lights ON.png" id="6_8brhn"]
+[ext_resource type="Material" uid="uid://bt83ceuwscyj" path="res://assets/resources/transparency_mask.tres" id="7_arvn2"]
+[ext_resource type="VideoStream" uid="uid://dug6vdqeg4tr0" path="res://assets/videos/selection_anims/Crash and Burn Selection.ogv" id="8_ag70o"]
+[ext_resource type="Script" uid="uid://dy61aumbb342y" path="res://scripts/selection_slice.gd" id="9_swqn0"]
+[ext_resource type="VideoStream" uid="uid://cauycy34b64kx" path="res://assets/videos/hover_anims/Crash and Burn Hover.ogv" id="10_0rvnh"]
+[ext_resource type="VideoStream" uid="uid://bdguuy5lit0yr" path="res://assets/videos/selection_anims/Oil and Water Selection.ogv" id="11_t5anh"]
+[ext_resource type="VideoStream" uid="uid://br4djgffu7mne" path="res://assets/videos/hover_anims/Oil and Water Hover.ogv" id="12_ma2gc"]
+[ext_resource type="VideoStream" uid="uid://b6u3bklbfj2l3" path="res://assets/videos/selection_anims/It_s a no from me Selection.ogv" id="13_fydiw"]
+[ext_resource type="VideoStream" uid="uid://d3g5remo4wvxe" path="res://assets/videos/hover_anims/It_s a no from me Hover.ogv" id="14_llxvb"]
+[ext_resource type="VideoStream" uid="uid://b4fxrm6ulxehv" path="res://assets/videos/selection_anims/Spicy Selection.ogv" id="15_yiohj"]
+[ext_resource type="VideoStream" uid="uid://blhao04p6w6uk" path="res://assets/videos/hover_anims/Spicy Hover.ogv" id="16_e42nd"]
+[ext_resource type="VideoStream" uid="uid://m0aa6rjbdi3p" path="res://assets/videos/selection_anims/Meant to be Selection.ogv" id="17_0nbnt"]
+[ext_resource type="VideoStream" uid="uid://vw1lctk13u5x" path="res://assets/videos/hover_anims/Meant to be Hover.ogv" id="18_lo2qy"]
+[ext_resource type="VideoStream" uid="uid://cgtopwp3sk1d1" path="res://assets/videos/selection_anims/Twin Flames Selection.ogv" id="19_6pbma"]
+[ext_resource type="VideoStream" uid="uid://bnrngo243eenx" path="res://assets/videos/hover_anims/Twin Flames Hover.ogv" id="20_6wy3y"]
+[ext_resource type="Texture2D" uid="uid://dv42doand012b" path="res://assets/textures/wheel/Center Circle.png" id="21_k6upa"]
+[ext_resource type="Texture2D" uid="uid://wnxow038fata" path="res://assets/textures/wheel/Pointer.png" id="22_bjhnd"]
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_a8y0u"]
+frames = 2
+speed_scale = 5.0
+frame_0/texture = ExtResource("5_ca30p")
+frame_1/texture = ExtResource("6_8brhn")
+frame_1/duration = 1.0
+
+[node name="FlameFinderDial" type="Control" node_paths=PackedStringArray("dial", "led")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_arvn2")
+dial = NodePath("Dial")
+led = NodePath("LED")
+
+[node name="Background" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Logo" type="TextureRect" parent="Background"]
+layout_mode = 2
+texture = ExtResource("2_5c8d3")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Bk" type="TextureRect" parent="Background"]
+layout_mode = 2
+texture = ExtResource("3_qk5au")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Slots" type="TextureRect" parent="Background"]
+layout_mode = 2
+texture = ExtResource("4_jebmd")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="LED" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(540, 1920)
+texture = SubResource("AnimatedTexture_a8y0u")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Slots" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CrashAndBurn" type="VideoStreamPlayer" parent="Slots" node_paths=PackedStringArray("interactive_gui")]
+material = ExtResource("7_arvn2")
+layout_mode = 2
+stream = ExtResource("8_ag70o")
+autoplay = true
+expand = true
+script = ExtResource("9_swqn0")
+interactive_gui = NodePath("../..")
+hover_stream = ExtResource("10_0rvnh")
+selected_stream = ExtResource("8_ag70o")
+
+[node name="OilAndWater" type="VideoStreamPlayer" parent="Slots" node_paths=PackedStringArray("interactive_gui")]
+material = ExtResource("7_arvn2")
+layout_mode = 2
+stream = ExtResource("11_t5anh")
+autoplay = true
+expand = true
+script = ExtResource("9_swqn0")
+interactive_gui = NodePath("../..")
+hover_stream = ExtResource("12_ma2gc")
+selected_stream = ExtResource("11_t5anh")
+metadata/_custom_type_script = "uid://dy61aumbb342y"
+
+[node name="ItsANoFromMe" type="VideoStreamPlayer" parent="Slots" node_paths=PackedStringArray("interactive_gui")]
+material = ExtResource("7_arvn2")
+layout_mode = 2
+stream = ExtResource("13_fydiw")
+autoplay = true
+expand = true
+script = ExtResource("9_swqn0")
+interactive_gui = NodePath("../..")
+hover_stream = ExtResource("14_llxvb")
+selected_stream = ExtResource("13_fydiw")
+metadata/_custom_type_script = "uid://dy61aumbb342y"
+
+[node name="Spicy" type="VideoStreamPlayer" parent="Slots" node_paths=PackedStringArray("interactive_gui")]
+material = ExtResource("7_arvn2")
+layout_mode = 2
+stream = ExtResource("15_yiohj")
+autoplay = true
+expand = true
+script = ExtResource("9_swqn0")
+interactive_gui = NodePath("../..")
+hover_stream = ExtResource("16_e42nd")
+selected_stream = ExtResource("15_yiohj")
+metadata/_custom_type_script = "uid://dy61aumbb342y"
+
+[node name="MeantToBe" type="VideoStreamPlayer" parent="Slots" node_paths=PackedStringArray("interactive_gui")]
+material = ExtResource("7_arvn2")
+layout_mode = 2
+stream = ExtResource("17_0nbnt")
+autoplay = true
+expand = true
+script = ExtResource("9_swqn0")
+interactive_gui = NodePath("../..")
+hover_stream = ExtResource("18_lo2qy")
+selected_stream = ExtResource("17_0nbnt")
+metadata/_custom_type_script = "uid://dy61aumbb342y"
+
+[node name="TwinFlames" type="VideoStreamPlayer" parent="Slots" node_paths=PackedStringArray("interactive_gui")]
+material = ExtResource("7_arvn2")
+layout_mode = 2
+stream = ExtResource("19_6pbma")
+autoplay = true
+expand = true
+script = ExtResource("9_swqn0")
+interactive_gui = NodePath("../..")
+hover_stream = ExtResource("20_6wy3y")
+selected_stream = ExtResource("19_6pbma")
+metadata/_custom_type_script = "uid://dy61aumbb342y"
+
+[node name="Foreground" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2125.44
+offset_bottom = -81.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = -80
+theme_override_constants/margin_top = -80
+theme_override_constants/margin_right = -80
+theme_override_constants/margin_bottom = -80
+
+[node name="SemiCircle" type="TextureRect" parent="Foreground"]
+layout_mode = 2
+texture = ExtResource("21_k6upa")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Dial" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(540, 1920)
+texture = ExtResource("22_bjhnd")
+expand_mode = 5
+stretch_mode = 6

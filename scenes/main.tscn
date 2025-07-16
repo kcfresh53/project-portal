@@ -1,0 +1,68 @@
+[gd_scene load_steps=9 format=3 uid="uid://bonlvonh48r0f"]
+
+[ext_resource type="PackedScene" uid="uid://cq6iomo3m4s2t" path="res://scenes/flame_finder_dial.tscn" id="2_0wfyh"]
+[ext_resource type="Script" uid="uid://beenuki2rnh6b" path="res://scripts/gesture_manager.gd" id="2_jyhfs"]
+[ext_resource type="Shader" uid="uid://d2aiq4vffjxg1" path="res://scripts/shaders/color_masker_aliased.gdshader" id="3_jyhfs"]
+[ext_resource type="VideoStream" uid="uid://blh78qowyihlg" path="res://assets/videos/fx/peace.ogv" id="3_tefeu"]
+[ext_resource type="VideoStream" uid="uid://dvrs3xpdy6koo" path="res://assets/videos/fx/confetti.ogv" id="4_o6xl0"]
+[ext_resource type="Material" uid="uid://bt83ceuwscyj" path="res://assets/resources/transparency_mask.tres" id="7_o6xl0"]
+[ext_resource type="Script" uid="uid://b0ppwgd8svhcl" path="res://scripts/camera_data_manager.gd" id="13_trceg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jyhfs"]
+shader = ExtResource("3_jyhfs")
+shader_parameter/tolerance = 0.1
+shader_parameter/smoothness = 0.5
+shader_parameter/prev_color = Color(0, 0, 0, 1)
+shader_parameter/new_color = Color(0, 0, 0, 0)
+
+[node name="Main" type="CanvasLayer"]
+
+[node name="CameraDataManager" type="Node" parent="." node_paths=PackedStringArray("mask_texture_rect", "rgb_texture_rect")]
+script = ExtResource("13_trceg")
+width = 144
+fps = 24
+mask_texture_rect = NodePath("../Mask")
+rgb_texture_rect = NodePath("../RGBPreview")
+enable_gesture_recognition = true
+debug_logging = false
+
+[node name="GestureManager" type="Node" parent="." node_paths=PackedStringArray("camera_data_manager", "video_player")]
+script = ExtResource("2_jyhfs")
+camera_data_manager = NodePath("../CameraDataManager")
+video_player = NodePath("../GestureVideoFX")
+gesture_streams = Dictionary[String, VideoStreamTheora]({
+"ILoveYou": ExtResource("4_o6xl0"),
+"Open_Palm": ExtResource("4_o6xl0"),
+"Victory": ExtResource("3_tefeu")
+})
+
+[node name="Mask" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_jyhfs")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="RGBPreview" type="TextureRect" parent="."]
+offset_right = 214.0
+offset_bottom = 380.0
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="FlameFinderDial" parent="." instance=ExtResource("2_0wfyh")]
+selected = 1
+
+[node name="GestureVideoFX" type="VideoStreamPlayer" parent="."]
+material = ExtResource("7_o6xl0")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand = true
