@@ -14,10 +14,17 @@ class_name CameraDataManager
 
 @export var enable_gesture_recognition: bool = false
 @export var debug_logging: bool = true
+@export var run_double_instance: bool = false
 
 var update_timer: Timer
 var masker_binary_path: String = ProjectSettings.globalize_path("user://bin/cdm")
 var process_id: int = -1
+var second_process_id: int = -1
+var second_godot_instance_id: int = -1
+
+# Instance tracking
+var is_second_instance: bool = false
+var camera_index: int = 0
 
 # Gesture recognition variables
 var last_gesture_timestamp: float = 0.0
@@ -28,9 +35,14 @@ signal gesture_detected(gesture_name: String, confidence: float)
 signal gesture_changed(old_gesture: String, new_gesture: String, confidence: float)
 
 func _ready():
-	log_debug("Initializing CameraDataManager")
+	get_tree().set_auto_accept_quit(false)
 	
-	# Start the binary process
+	# Check if this is a second instance launched with command line arguments
+	_check_command_line_args()
+	
+	log_debug("Initializing CameraDataManager (Camera %d)" % camera_index)
+	
+	# Start the binary process(es)
 	_start_masker_binary()
 	
 	# Set up update timer based on FPS
@@ -40,18 +52,58 @@ func _ready():
 	add_child(update_timer)
 	update_timer.start()
 	
-	log_debug("CameraDataManager initialized with FPS: %d" % fps)
+	log_debug("CameraDataManager initialized with FPS: %d (Camera %d)" % [fps, camera_index])
+
+func _check_command_line_args():
+	"""Check if this instance was launched with camera-specific arguments"""
+	var args = OS.get_cmdline_user_args()  # Use user args instead of all cmdline args
+	
+	# Look for --second_instance flag in user arguments
+	if "--second_instance" in args:
+		is_second_instance = true
+		camera_index = 1
+		
+		# Update file paths for second instance
+		mask_bin_path = ProjectSettings.globalize_path("user://mask_cam1.bin")
+		rgb_bin_path = ProjectSettings.globalize_path("user://rgb_cam1.bin")
+		gesture_data_bin_path = ProjectSettings.globalize_path("user://gesture_data_cam1.bin")
+		
+		log_debug("This is a second instance, using camera 1")
+		
+		# Set window title to distinguish instances
+		get_window().title = "CameraDataManager - Camera 1"
+		
+		# IMPORTANT: Second instance should NOT try to launch another instance
+		run_double_instance = false
+	else:
+		# This is the primary instance
+		camera_index = 0
+		get_window().title = "CameraDataManager - Camera 0"
 
 func _exit_tree():
 	# Clean up the process when the node is destroyed
+	kill_binary()
+
+func kill_binary():
 	if process_id != -1:
 		log_debug("Terminating masker binary process")
 		OS.kill(process_id)
+		process_id = -1
+	
+	if second_process_id != -1:
+		log_debug("Terminating second masker binary process")
+		OS.kill(second_process_id)
+		second_process_id = -1
+	
+	if second_godot_instance_id != -1:
+		log_debug("Terminating second Godot instance")
+		OS.kill(second_godot_instance_id)
+		second_godot_instance_id = -1
 
 func log_debug(message: String):
 	"""Centralized logging function that can be disabled with debug_logging bool"""
 	if debug_logging:
-		print("[CameraDataManager] " + message)
+		print("[CameraDataManager-Cam%d] %s" % [camera_index, message])
 
 func _start_masker_binary():
 	"""Start the masker binary with appropriate arguments in non-blocking fashion"""
@@ -61,9 +113,59 @@ func _start_masker_binary():
 		log_debug("ERROR: Masker binary not found at: %s" % masker_binary_path)
 		return
 	
+	if is_second_instance:
+		# Second instance only starts its own CDM process
+		_start_single_instance(camera_index, mask_bin_path, rgb_bin_path, gesture_data_bin_path)
+	else:
+		# Primary instance starts first CDM process
+		_start_single_instance(camera_index, mask_bin_path, rgb_bin_path, gesture_data_bin_path)
+		
+		# Launch second Godot instance if enabled
+		if run_double_instance:
+			_launch_second_godot_instance()
+
+func _launch_second_godot_instance():
+	"""Launch a second Godot application window for the second camera"""
+	# Prevent recursive launching
+	if is_second_instance:
+		log_debug("SKIP: Second instance should not launch another instance")
+		return
+	
+	var godot_executable = OS.get_executable_path()
+	var project_path = ProjectSettings.globalize_path("res://")
+	
+	# Get the main scene path to ensure both instances run the same scene
+	var main_scene = ProjectSettings.get_setting("application/run/main_scene", "")
+	if main_scene.is_empty():
+		log_debug("ERROR: No main scene defined in project settings")
+		return
+	
+	# Arguments for the second Godot instance
 	var arguments = [
-		"--out_path", mask_bin_path,
-		"--rgb_out_path", rgb_bin_path,
+		"--path", project_path,
+		"--main-pack", "",  # Use project files, not packed
+		main_scene,
+		"--", # Separator for user arguments
+		"--second_instance"
+	]
+	
+	log_debug("Launching second Godot instance: %s" % godot_executable)
+	log_debug("Arguments: %s" % str(arguments))
+	
+	# Launch the second Godot instance
+	second_godot_instance_id = OS.create_process(godot_executable, arguments)
+	
+	if second_godot_instance_id == -1:
+		log_debug("ERROR: Failed to launch second Godot instance")
+	else:
+		log_debug("SUCCESS: Second Godot instance launched with PID: %d" % second_godot_instance_id)
+
+func _start_single_instance(cam_index: int, mask_path: String, rgb_path: String, gesture_path: String):
+	"""Start a single instance of the masker binary for a specific camera"""
+	var arguments = [
+		"--cam", str(cam_index),
+		"--out_path", mask_path,
+		"--rgb_out_path", rgb_path,
 		"--export_both",
 		"--width", str(width),
 		"--height", str(height),
@@ -73,18 +175,23 @@ func _start_masker_binary():
 	# Add gesture recognition if enabled
 	if enable_gesture_recognition:
 		arguments.append("--recognize_gestures")
-		arguments.append(gesture_data_bin_path)
-		log_debug("Gesture recognition enabled, exporting to: %s" % gesture_data_bin_path)
+		arguments.append(gesture_path)
+		log_debug("Gesture recognition enabled for camera %d, exporting to: %s" % [cam_index, gesture_path])
 	
-	log_debug("Starting with arguments: %s" % str(arguments))
+	log_debug("Starting camera %d with arguments: %s" % [cam_index, str(arguments)])
 	
 	# Start the process in non-blocking mode
-	process_id = OS.create_process(masker_binary_path, arguments)
+	var pid = OS.create_process(masker_binary_path, arguments)
 	
-	if process_id == -1:
-		log_debug("ERROR: Failed to start masker binary")
+	if pid == -1:
+		log_debug("ERROR: Failed to start masker binary for camera %d" % cam_index)
 	else:
-		log_debug("SUCCESS: Masker binary started with PID: %d" % process_id)
+		log_debug("SUCCESS: Masker binary started for camera %d with PID: %d" % [cam_index, pid])
+		
+		if is_second_instance:
+			second_process_id = pid
+		else:
+			process_id = pid
 
 func _update_textures():
 	"""Update both mask and RGB textures"""
@@ -217,12 +324,34 @@ func set_gesture_recognition(enabled: bool):
 		log_debug("Gesture recognition %s" % ("enabled" if enabled else "disabled"))
 		restart_masker_binary()
 
+func set_double_instance(enabled: bool):
+	"""Enable or disable double instance mode"""
+	# Prevent second instance from trying to launch another instance
+	if is_second_instance:
+		log_debug("SKIP: Second instance cannot enable double instance mode")
+		return
+	
+	if run_double_instance != enabled:
+		run_double_instance = enabled
+		log_debug("Double instance mode %s" % ("enabled" if enabled else "disabled"))
+		
+		if enabled:
+			_launch_second_godot_instance()
+		elif second_godot_instance_id != -1:
+			OS.kill(second_godot_instance_id)
+			second_godot_instance_id = -1
+
 func restart_masker_binary():
 	"""Restart the masker binary (useful for changing parameters)"""
 	if process_id != -1:
 		log_debug("Stopping existing masker binary process")
 		OS.kill(process_id)
 		process_id = -1
+	
+	if second_process_id != -1:
+		log_debug("Stopping existing second masker binary process")
+		OS.kill(second_process_id)
+		second_process_id = -1
 	
 	_start_masker_binary()
 
@@ -242,6 +371,13 @@ func is_binary_running() -> bool:
 	# This is a simple check - you might want to implement more robust monitoring
 	return true
 
+func is_second_godot_instance_running() -> bool:
+	"""Check if the second Godot instance is still running"""
+	if not run_double_instance or second_godot_instance_id == -1:
+		return false
+	
+	return true
+
 func get_current_gesture() -> String:
 	"""Get the current gesture name"""
 	return current_gesture
@@ -253,3 +389,16 @@ func get_gesture_confidence() -> float:
 func get_last_gesture_timestamp() -> float:
 	"""Get the timestamp of the last gesture detection"""
 	return last_gesture_timestamp
+
+func get_camera_index() -> int:
+	"""Get the camera index this instance is using"""
+	return camera_index
+
+func is_primary_instance() -> bool:
+	"""Check if this is the primary instance"""
+	return not is_second_instance
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		kill_binary()
+		get_tree().quit()

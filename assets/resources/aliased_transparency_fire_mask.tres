@@ -1,0 +1,40 @@
+[gd_resource type="ShaderMaterial" load_steps=7 format=3 uid="uid://c2ighb6aevpb4"]
+
+[ext_resource type="Shader" uid="uid://sahamjw56s01" path="res://scripts/shaders/fire_outline_mask.gdshader" id="1_7alnd"]
+
+[sub_resource type="Gradient" id="Gradient_5c8d3"]
+offsets = PackedFloat32Array(0, 0.534292)
+colors = PackedColorArray(1, 0.0313726, 0, 1, 1, 0.564706, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_tefeu"]
+gradient = SubResource("Gradient_5c8d3")
+
+[sub_resource type="Gradient" id="Gradient_qk5au"]
+colors = PackedColorArray(0.158472, 0.158472, 0.158472, 1, 1, 1, 1, 0.384314)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jebmd"]
+frequency = 0.0267
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_o6xl0"]
+seamless = true
+color_ramp = SubResource("Gradient_qk5au")
+noise = SubResource("FastNoiseLite_jebmd")
+
+[resource]
+shader = ExtResource("1_7alnd")
+shader_parameter/color_tolerance = 0.1
+shader_parameter/color_smoothness = 0.05
+shader_parameter/prev_color = Color(0, 0, 0, 1)
+shader_parameter/new_color = Color(0, 0, 0, 0)
+shader_parameter/scrollingTexture = SubResource("NoiseTexture2D_o6xl0")
+shader_parameter/textureScale = Vector2(1, 1)
+shader_parameter/angle = 270.0
+shader_parameter/textureSpeed = 0.1
+shader_parameter/textureStrength = 0.5
+shader_parameter/maxLineWidth = 14.0
+shader_parameter/minLineWidth = 0.0
+shader_parameter/speed = 10.0
+shader_parameter/blockSize = 20.0
+shader_parameter/color_tex = SubResource("GradientTexture1D_tefeu")
+shader_parameter/gradientResolution = 10
+shader_parameter/tolerance = 0.999

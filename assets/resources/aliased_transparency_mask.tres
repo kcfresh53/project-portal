@@ -1,0 +1,21 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://bleg57a1q8fa6"]
+
+[ext_resource type="Shader" uid="uid://d2aiq4vffjxg1" path="res://scripts/shaders/color_masker_aliased.gdshader" id="1_num7x"]
+
+[sub_resource type="Gradient" id="Gradient_num7x"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_148wo"]
+gradient = SubResource("Gradient_num7x")
+fill_from = Vector2(0.5, 0.6)
+fill_to = Vector2(0.5, 0)
+metadata/_snap_enabled = true
+
+[resource]
+shader = ExtResource("1_num7x")
+shader_parameter/tolerance = 0.1
+shader_parameter/prev_color = Color(0, 0, 0, 1)
+shader_parameter/new_color = Color(0, 0, 0, 0)
+shader_parameter/overlay_texture = SubResource("GradientTexture2D_148wo")
+shader_parameter/scroll_direction = Vector2(0, 0)
+shader_parameter/scroll_speed = 0.05
+shader_parameter/repeat_scale = 1.0

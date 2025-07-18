@@ -1,7 +1,8 @@
-[gd_scene load_steps=24 format=3 uid="uid://cq6iomo3m4s2t"]
+[gd_scene load_steps=32 format=3 uid="uid://cq6iomo3m4s2t"]
 
 [ext_resource type="Script" uid="uid://dg2w51640ihor" path="res://scripts/interactive_gui.gd" id="1_arvn2"]
 [ext_resource type="Texture2D" uid="uid://shebt1220e4s" path="res://assets/textures/wheel/flame_finder_logo.png" id="2_5c8d3"]
+[ext_resource type="Shader" uid="uid://dcd86ccmrcoft" path="res://scripts/shaders/aura_outline_scroll_texture.gdshader" id="2_qk5au"]
 [ext_resource type="Texture2D" uid="uid://cko7sljyj27vy" path="res://assets/textures/wheel/Wheel Background.png" id="3_qk5au"]
 [ext_resource type="Texture2D" uid="uid://0fp3at3a68fv" path="res://assets/textures/wheel/All_Slots_Still.png" id="4_jebmd"]
 [ext_resource type="Texture2D" uid="uid://c6t3ebbrn2vil" path="res://assets/textures/wheel/Lights OFF.png" id="5_ca30p"]
@@ -22,6 +23,40 @@
 [ext_resource type="VideoStream" uid="uid://bnrngo243eenx" path="res://assets/videos/hover_anims/Twin Flames Hover.ogv" id="20_6wy3y"]
 [ext_resource type="Texture2D" uid="uid://dv42doand012b" path="res://assets/textures/wheel/Center Circle.png" id="21_k6upa"]
 [ext_resource type="Texture2D" uid="uid://wnxow038fata" path="res://assets/textures/wheel/Pointer.png" id="22_bjhnd"]
+[ext_resource type="Script" uid="uid://bunj1ornsgd5q" path="res://addons/simple-gui-transitions/transition.gd" id="24_qk5au"]
+
+[sub_resource type="Gradient" id="Gradient_5c8d3"]
+offsets = PackedFloat32Array(0, 0.534292)
+colors = PackedColorArray(1, 0.0313726, 0, 1, 1, 0.564706, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_qk5au"]
+gradient = SubResource("Gradient_5c8d3")
+
+[sub_resource type="Gradient" id="Gradient_qk5au"]
+colors = PackedColorArray(0.158472, 0.158472, 0.158472, 1, 1, 1, 1, 0.384314)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jebmd"]
+frequency = 0.0267
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ca30p"]
+seamless = true
+color_ramp = SubResource("Gradient_qk5au")
+noise = SubResource("FastNoiseLite_jebmd")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jebmd"]
+shader = ExtResource("2_qk5au")
+shader_parameter/scrollingTexture = SubResource("NoiseTexture2D_ca30p")
+shader_parameter/textureScale = Vector2(1, 1)
+shader_parameter/angle = 270.0
+shader_parameter/textureSpeed = 0.1
+shader_parameter/textureStrength = 0.5
+shader_parameter/maxLineWidth = 13.467
+shader_parameter/minLineWidth = 0.0
+shader_parameter/speed = 10.0
+shader_parameter/blockSize = 20.0
+shader_parameter/color = SubResource("GradientTexture1D_qk5au")
+shader_parameter/gradientResolution = 10
+shader_parameter/tolerance = 0.0
 
 [sub_resource type="AnimatedTexture" id="AnimatedTexture_a8y0u"]
 frames = 2
@@ -50,6 +85,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Logo" type="TextureRect" parent="Background"]
+material = SubResource("ShaderMaterial_jebmd")
 layout_mode = 2
 texture = ExtResource("2_5c8d3")
 expand_mode = 5
@@ -157,6 +193,13 @@ interactive_gui = NodePath("../..")
 hover_stream = ExtResource("20_6wy3y")
 selected_stream = ExtResource("19_6pbma")
 metadata/_custom_type_script = "uid://dy61aumbb342y"
+
+[node name="GuiTransition" type="Node" parent="Slots"]
+script = ExtResource("24_qk5au")
+animation_leave = 5
+layout = NodePath("..")
+controls = Array[NodePath]([NodePath("../CrashAndBurn"), NodePath("../OilAndWater"), NodePath("../ItsANoFromMe"), NodePath("../Spicy"), NodePath("../MeantToBe"), NodePath("../TwinFlames")])
+metadata/_custom_type_script = "uid://bunj1ornsgd5q"
 
 [node name="Foreground" type="MarginContainer" parent="."]
 layout_mode = 1

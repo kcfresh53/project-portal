@@ -13,8 +13,12 @@ func _ready() -> void:
 
 
 func _on_gesture_changed(_old_gesture: String, new_gesture: String, _confidence: float) -> void:
+	if new_gesture == "Thumb_Down":
+		get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+	
 	if gesture_streams.has(new_gesture):
 		if !video_player: return
+		if video_player.is_playing(): return
 		
 		video_player.stream = gesture_streams[new_gesture]
 		video_player.play()

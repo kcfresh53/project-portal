@@ -12,7 +12,7 @@ var _hovered: bool
 func _ready() -> void:
 	if stream:
 		paused = true
-		stream_position = 0
+		#stream_position = 0
 	
 	if interactive_gui:
 		interactive_gui.sector_selected.connect(_on_sector_selected)

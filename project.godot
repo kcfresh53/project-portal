@@ -13,10 +13,31 @@ config_version=5
 config/name="Project Portal"
 run/main_scene="uid://bonlvonh48r0f"
 config/features=PackedStringArray("4.4", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://assets/textures/icons/icon.svg"
+
+[autoload]
+
+GuiTransitions="*res://addons/simple-gui-transitions/singleton.gd"
 
 [display]
 
 window/size/viewport_width=1080
 window/size/viewport_height=1920
 window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/simple-gui-transitions/plugin.cfg")
+
+[gui_transitions]
+
+config/default/auto_start=true
+config/default/fade_layout=true
+config/default/center_pivot=true
+config/default/duration=0.5
+config/default/delay=0.5
+config/default/transition_type="QUAD"
+config/default/ease_type="IN_OUT"
+config/default/animation_enter=4
+config/default/animation_leave=4
