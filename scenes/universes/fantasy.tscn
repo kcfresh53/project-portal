@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://bxoin388rykbx"]
+
+[ext_resource type="Script" uid="uid://bu7jxravnnvj5" path="res://scripts/interactive_bg.gd" id="1_0ugap"]
+[ext_resource type="Texture2D" uid="uid://dfahqsnd1lxid" path="res://assets/textures/backgrounds/FantasyBG.png" id="2_0ugap"]
+[ext_resource type="Material" uid="uid://bleg57a1q8fa6" path="res://assets/resources/aliased_transparency_mask.tres" id="3_501wr"]
+
+[node name="InteractiveBG" type="Control" node_paths=PackedStringArray("mask", "rgb")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0ugap")
+mask = NodePath("Mask")
+rgb = NodePath("RGBPreview")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_0ugap")
+
+[node name="Mask" type="TextureRect" parent="."]
+material = ExtResource("3_501wr")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="RGBPreview" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 214.0
+offset_bottom = 380.0
+expand_mode = 1
+stretch_mode = 5
+flip_h = true

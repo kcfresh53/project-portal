@@ -2,6 +2,7 @@ extends Node
 class_name GestureManager
 
 @export var camera_data_manager: CameraDataManager
+@export var gui_popup: GUIPopup
 
 @export var video_player: VideoStreamPlayer
 @export var gesture_streams: Dictionary[String, VideoStreamTheora]
@@ -13,8 +14,7 @@ func _ready() -> void:
 
 
 func _on_gesture_changed(_old_gesture: String, new_gesture: String, _confidence: float) -> void:
-	if new_gesture == "Thumb_Down":
-		get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+	if gui_popup: gui_popup.confirm_exit(new_gesture)
 	
 	if gesture_streams.has(new_gesture):
 		if !video_player: return

@@ -1,0 +1,78 @@
+[gd_scene load_steps=7 format=3 uid="uid://cdup6gkrbpsif"]
+
+[ext_resource type="Script" uid="uid://bu7jxravnnvj5" path="res://scripts/interactive_bg.gd" id="1_2ppr2"]
+[ext_resource type="VideoStream" uid="uid://b0s0cfv8678t1" path="res://assets/videos/backgrounds/tavern_background.ogv" id="2_bfrbb"]
+[ext_resource type="Material" uid="uid://bleg57a1q8fa6" path="res://assets/resources/aliased_transparency_mask.tres" id="3_is6dn"]
+[ext_resource type="VideoStream" uid="uid://ccfhf8ecys6w5" path="res://assets/videos/backgrounds/tavern_bar.ogv" id="4_1axit"]
+[ext_resource type="Texture2D" uid="uid://4qmdbtp58c84" path="res://assets/textures/backgrounds/Bar transparent.png" id="5_5612a"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_tipki"]
+blend_mode = 1
+
+[node name="InteractiveBG" type="Control" node_paths=PackedStringArray("mask", "rgb")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2ppr2")
+mask = NodePath("Mask")
+rgb = NodePath("RGBPreview")
+
+[node name="Background" type="VideoStreamPlayer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stream = ExtResource("2_bfrbb")
+autoplay = true
+expand = true
+loop = true
+
+[node name="Mask" type="TextureRect" parent="."]
+material = ExtResource("3_is6dn")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="Foreground" type="VideoStreamPlayer" parent="."]
+material = SubResource("CanvasItemMaterial_tipki")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stream = ExtResource("4_1axit")
+autoplay = true
+expand = true
+loop = true
+
+[node name="TextureRect" type="TextureRect" parent="Foreground"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_5612a")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RGBPreview" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 214.0
+offset_bottom = 380.0
+expand_mode = 1
+stretch_mode = 5
+flip_h = true

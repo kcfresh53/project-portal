@@ -1,21 +1,22 @@
-[gd_scene load_steps=19 format=3 uid="uid://bonlvonh48r0f"]
+[gd_scene load_steps=22 format=3 uid="uid://bonlvonh48r0f"]
 
 [ext_resource type="PackedScene" uid="uid://cq6iomo3m4s2t" path="res://scenes/flame_finder_dial.tscn" id="2_0wfyh"]
 [ext_resource type="Script" uid="uid://beenuki2rnh6b" path="res://scripts/gesture_manager.gd" id="2_jyhfs"]
 [ext_resource type="VideoStream" uid="uid://blh78qowyihlg" path="res://assets/videos/fx/peace.ogv" id="3_tefeu"]
 [ext_resource type="VideoStream" uid="uid://dvrs3xpdy6koo" path="res://assets/videos/fx/confetti.ogv" id="4_o6xl0"]
 [ext_resource type="VideoStream" uid="uid://coo7vmx0k2yw6" path="res://assets/videos/fx/hello.ogv" id="5_choun"]
-[ext_resource type="Material" uid="uid://bleg57a1q8fa6" path="res://assets/resources/aliased_transparency_mask.tres" id="5_tefeu"]
-[ext_resource type="VideoStream" uid="uid://b0s0cfv8678t1" path="res://assets/videos/backgrounds/tavern_background.ogv" id="5_tipki"]
 [ext_resource type="VideoStream" uid="uid://ciivyc61nhy6u" path="res://assets/videos/fx/sparks.ogv" id="6_eb6dy"]
-[ext_resource type="VideoStream" uid="uid://ccfhf8ecys6w5" path="res://assets/videos/backgrounds/tavern_bar.ogv" id="7_85g3d"]
 [ext_resource type="VideoStream" uid="uid://b8wojgj871xu8" path="res://assets/videos/fx/flower.ogv" id="7_trceg"]
-[ext_resource type="Texture2D" uid="uid://4qmdbtp58c84" path="res://assets/textures/backgrounds/Bar transparent.png" id="8_85g3d"]
 [ext_resource type="Script" uid="uid://chmqefvxxqluv" path="res://scripts/gui_popup.gd" id="8_trceg"]
+[ext_resource type="PackedScene" uid="uid://cdup6gkrbpsif" path="res://scenes/universes/bar.tscn" id="9_eb6dy"]
+[ext_resource type="Script" uid="uid://ngkgetdbbtw3" path="res://scripts/bg_manager.gd" id="9_trceg"]
+[ext_resource type="PackedScene" uid="uid://cp3c0sjvt7vev" path="res://scenes/universes/steampunk.tscn" id="11_a8y0u"]
+[ext_resource type="PackedScene" uid="uid://bxoin388rykbx" path="res://scenes/universes/fantasy.tscn" id="12_jkv2x"]
+[ext_resource type="PackedScene" uid="uid://dakkb4e51g43k" path="res://scenes/universes/islands.tscn" id="13_jbj1t"]
 [ext_resource type="Script" uid="uid://b0ppwgd8svhcl" path="res://scripts/camera_data_manager.gd" id="13_trceg"]
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_tipki"]
-blend_mode = 1
+[ext_resource type="Texture2D" uid="uid://cgyum74mmlu6i" path="res://assets/textures/popups/exit_indicator.png" id="14_a8y0u"]
+[ext_resource type="PackedScene" uid="uid://bdt4mnp4x76a6" path="res://scenes/universes/pixel.tscn" id="14_muem4"]
+[ext_resource type="Script" uid="uid://bunj1ornsgd5q" path="res://addons/simple-gui-transitions/transition.gd" id="15_jkv2x"]
 
 [sub_resource type="Animation" id="Animation_choun"]
 length = 0.001
@@ -59,18 +60,16 @@ blend_mode = 1
 
 [node name="Main" type="CanvasLayer"]
 
-[node name="CameraDataManager" type="Node" parent="." node_paths=PackedStringArray("mask_texture_rect", "rgb_texture_rect")]
+[node name="CameraDataManager" type="Node" parent="."]
 script = ExtResource("13_trceg")
 fps = 60
-mask_texture_rect = NodePath("../Mask")
-rgb_texture_rect = NodePath("../RGBPreview")
 enable_gesture_recognition = true
-debug_logging = false
 run_double_instance = true
 
-[node name="GestureManager" type="Node" parent="." node_paths=PackedStringArray("camera_data_manager", "video_player")]
+[node name="GestureManager" type="Node" parent="." node_paths=PackedStringArray("camera_data_manager", "gui_popup", "video_player")]
 script = ExtResource("2_jyhfs")
 camera_data_manager = NodePath("../CameraDataManager")
+gui_popup = NodePath("../GUIPopup")
 video_player = NodePath("../GestureVideoFX")
 gesture_streams = Dictionary[String, VideoStreamTheora]({
 "Closed_Fist": ExtResource("7_trceg"),
@@ -83,58 +82,10 @@ gesture_streams = Dictionary[String, VideoStreamTheora]({
 [node name="GUIPopup" type="Node" parent="."]
 script = ExtResource("8_trceg")
 
-[node name="Background" type="VideoStreamPlayer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-stream = ExtResource("5_tipki")
-autoplay = true
-expand = true
-loop = true
-
-[node name="Mask" type="TextureRect" parent="."]
-material = ExtResource("5_tefeu")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-expand_mode = 1
-stretch_mode = 5
-flip_h = true
-
-[node name="Foreground" type="VideoStreamPlayer" parent="."]
-material = SubResource("CanvasItemMaterial_tipki")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-stream = ExtResource("7_85g3d")
-autoplay = true
-expand = true
-loop = true
-
-[node name="TextureRect" type="TextureRect" parent="Foreground"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("8_85g3d")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="RGBPreview" type="TextureRect" parent="."]
-offset_right = 214.0
-offset_bottom = 380.0
-expand_mode = 1
-stretch_mode = 5
-flip_h = true
+[node name="BGManager" type="Node" parent="." node_paths=PackedStringArray("cdm")]
+script = ExtResource("9_trceg")
+backgrounds = Array[PackedScene]([ExtResource("9_eb6dy"), ExtResource("11_a8y0u"), ExtResource("12_jkv2x"), ExtResource("13_jbj1t"), ExtResource("14_muem4")])
+cdm = NodePath("../CameraDataManager")
 
 [node name="FlameFinderDial" parent="." instance=ExtResource("2_0wfyh")]
 modulate = Color(1, 1, 1, 0)
@@ -155,3 +106,32 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 expand = true
+
+[node name="GestureMain" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="PopupRect" type="TextureRect" parent="GestureMain"]
+visible = false
+custom_minimum_size = Vector2(288, 512)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture = ExtResource("14_a8y0u")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GuiTransition" type="Node" parent="GestureMain/PopupRect"]
+script = ExtResource("15_jkv2x")
+auto_start = 0
+animation_enter = 5
+layout = NodePath("..")
+layout_id = "pop"
+metadata/_custom_type_script = "uid://bunj1ornsgd5q"

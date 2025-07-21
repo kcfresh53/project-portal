@@ -149,6 +149,10 @@ func _on_dial_animation_complete() -> void:
 	# Snap LED to final selected position
 	_update_led_position(selected)
 	sector_selected.emit(selected)
+	
+	GuiTransitions.hide("dial_logo")
+	await get_tree().create_timer(2.5).timeout
+	GuiTransitions.hide("dial")
 
 # Public function to manually set selection and animate
 func set_selection(new_selection: int) -> void:

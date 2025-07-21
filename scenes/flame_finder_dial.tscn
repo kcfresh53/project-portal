@@ -91,6 +91,14 @@ texture = ExtResource("2_5c8d3")
 expand_mode = 5
 stretch_mode = 6
 
+[node name="GuiTransition" type="Node" parent="Background/Logo"]
+script = ExtResource("24_qk5au")
+animation_leave = 4
+duration = 0.5
+layout = NodePath("..")
+layout_id = "dial_logo"
+metadata/_custom_type_script = "uid://bunj1ornsgd5q"
+
 [node name="Bk" type="TextureRect" parent="Background"]
 layout_mode = 2
 texture = ExtResource("3_qk5au")
@@ -233,3 +241,13 @@ pivot_offset = Vector2(540, 1920)
 texture = ExtResource("22_bjhnd")
 expand_mode = 5
 stretch_mode = 6
+
+[node name="GuiTransition" type="Node" parent="."]
+script = ExtResource("24_qk5au")
+animation_leave = 3
+duration = 2.0
+transition_type = "BACK"
+ease_type = "IN_OUT"
+layout = NodePath("..")
+layout_id = "dial"
+metadata/_custom_type_script = "uid://bunj1ornsgd5q"

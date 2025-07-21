@@ -1,9 +1,9 @@
 extends Node
 class_name CameraDataManager
 
-@export_file("*.bin") var mask_bin_path: String = ProjectSettings.globalize_path("user://mask.bin")
-@export_file("*.bin") var rgb_bin_path: String = ProjectSettings.globalize_path("user://rgb.bin")
-@export_file("*.bin") var gesture_data_bin_path: String = ProjectSettings.globalize_path("user://gesture_data.bin")
+@export_file("*.bin") var mask_bin_path: String = ProjectSettings.globalize_path("mask.bin")
+@export_file("*.bin") var rgb_bin_path: String = ProjectSettings.globalize_path("rgb.bin")
+@export_file("*.bin") var gesture_data_bin_path: String = ProjectSettings.globalize_path("bin/gesture_data.bin")
 
 @export var width: int = 256
 @export var height: int = 256
@@ -17,7 +17,7 @@ class_name CameraDataManager
 @export var run_double_instance: bool = false
 
 var update_timer: Timer
-var masker_binary_path: String = ProjectSettings.globalize_path("user://bin/cdm")
+var masker_binary_path: String = "bin/cdm"
 var process_id: int = -1
 var second_process_id: int = -1
 var second_godot_instance_id: int = -1
@@ -34,7 +34,20 @@ var gesture_confidence: float = 0.0
 signal gesture_detected(gesture_name: String, confidence: float)
 signal gesture_changed(old_gesture: String, new_gesture: String, confidence: float)
 
+func _environment_setup() -> bool:
+	if !OS.has_feature("standalone"):
+		mask_bin_path = ProjectSettings.globalize_path("user://mask.bin")
+		rgb_bin_path = ProjectSettings.globalize_path("user://rgb.bin")
+		gesture_data_bin_path = ProjectSettings.globalize_path("user://gesture_data.bin")
+		masker_binary_path = ProjectSettings.globalize_path("user://bin/cdm")
+		return false
+	
+	return true
+
 func _ready():
+	var environ_log: bool = _environment_setup()
+	log_debug(str(environ_log))
+	
 	get_tree().set_auto_accept_quit(false)
 	
 	# Check if this is a second instance launched with command line arguments
